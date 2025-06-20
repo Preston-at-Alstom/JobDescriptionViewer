@@ -37,7 +37,11 @@ st.set_page_config(
     layout="wide",)
 
 packages = ['TO-ON-25-084 - Job description_27Apr2025_baseline_Mon-Fri_2025-04-07_Full.pdf',
-            'TO-ON-25-084 - Job description_27Apr2025_baseline_Sat-Sun_2025-04-07_Full.pdf']
+            'TO-ON-25-084 - Job description_27Apr2025_baseline_Sat-Sun_2025-04-07_Full.pdf',
+            'Job Descriptions - eff June 20, 2025 ONLY.pdf' ,
+            'Job Descriptions - eff June 21, 2025 ONLY.pdf',
+            'Job Descriptions - eff June 22, 2025 ONLY.pdf'
+            ]
 
 job_picker = st.radio("Job Package:", packages)
 
@@ -47,6 +51,7 @@ selected_job_package = job_picker
 
 # creating a pdf reader object
 reader = PyPDF2.PdfReader(selected_job_package)
+
 
 
 # Find the number of pages
@@ -64,112 +69,104 @@ filter = ["Non-Revenue", "Revenue", "DH", "VAN", "SHUTTLE", "Split from", 'takeo
 
 # Loop through pages
 for  page in range(number_of_pages):
+    
+    
     # Read page content
     page_content = reader.pages[page].extract_text()
-    
+
+
     trips_list = []
     trips_list_obj = []
     interact_list = []    
 
     # Read line by line and extract data
-    for line_number, line in enumerate(page_content.splitlines()):
+    for line in page_content.splitlines():
+        
+        line_as_list = line.split()
+        #print(line_as_list)
+
+        if len(line_as_list) > 0:
+            first_item = line_as_list[0]
 
 
-        if line_number == 0:
-            operating_time = line[-5:]
+            if first_item == 'Operating':
+                operating_time = line_as_list[-1]
 
-        if line_number == 1:
-            on_duty_location = line[38:40]
-            off_duty = line[51:56]
-            split_time = line[69:74]
+            if first_item == 'Platform':
+                on_duty_location = line_as_list[5][0:2]
+                off_duty = line_as_list[8]
+                split_time = line_as_list[11][0:5]
 
-        if line_number == 2:                
-            work_time = line[-6:]
+            if first_item == 'Work':                
+                work_time = line_as_list[-1]
 
-
-        if line_number == 3:
-            job_number = line[-6:]
-            operating_days = line[1:8]
-
-            # adjust position of on_duty time for Mon-Thu and Friday jobs
-            if operating_days == "Mon-Thu":
-                offset = 5
-            elif operating_days == "Friday ":
-                offset = 4
-            elif operating_days == "Saturda":
-                offset = 6
-            elif operating_days == "Sunday ":
-                offset = 4
-            else:
-                offset = 0
-
-            on_duty = line[43 + offset : 48 + offset]
-    
-
-        if line_number > 3:
-            # After first 3 lines, split up the line into individual items
-            line_as_list = line.split()
+            if first_item in ['Valid', 'Eff' , 'Mon-Fri', 'Friday', 'Saturda', 'Sunday']:
+                job_number = line_as_list[-1]
+                operating_days = line_as_list[3]
+                on_duty = line_as_list[-4]
+                
             
-            # Proceed if the line is not empty
-            if len(line_as_list) > 0:
-                first_item = line_as_list[0]
-                if first_item in filter:  
-                    formatted_line  = ''  
-                    service_type    = ''
-                    train_number    = ''
-                    start_location  = ''
-                    finish_location = ''
-                    departure       = ''
-                    arrival         = ''
+            if first_item in filter:  
+                formatted_line  = ''  
+                service_type    = ''
+                train_number    = ''
+                start_location  = ''
+                finish_location = ''
+                departure       = ''
+                arrival         = ''
 
-                    # Format line based om the 
-                    if  first_item in ['VAN', 'Shuttle']:
-                        service_type    = first_item
-                        start_location  = line_as_list[1]
-                        finish_location = line_as_list [2]
-                        departure       = line_as_list[3]
-                        arrival         = line_as_list[4]
 
-                        formatted_line = f'{service_type} | {start_location} {departure} > {finish_location} {arrival}'
+                if  first_item in ['VAN', 'Shuttle']:
+                    service_type    = first_item
+                    start_location  = line_as_list[1]
+                    finish_location = line_as_list [2]
+                    departure       = line_as_list[3]
+                    arrival         = line_as_list[4]
+
+                    formatted_line = f'{service_type} | {start_location} {departure} > {finish_location} {arrival}'
                     
-                    if  first_item in ["Non-Revenue", "Revenue"]:
-                        service_type    = first_item
-                        train_number    = line_as_list[2]
-                        start_location  = line_as_list[3]
-                        finish_location = line_as_list[4]
-                        departure       = line_as_list[5]
-                        arrival         = line_as_list[6]
+                if  first_item in ["Non-Revenue", "Revenue"]:
+                    service_type    = first_item
+                    train_number    = line_as_list[2]
+                    start_location  = line_as_list[3]
+                    finish_location = line_as_list[4]
+                    departure       = line_as_list[5]
+                    arrival         = line_as_list[6]
+                    
+                    formatted_line = f'{train_number} | {service_type} | {start_location} {departure} > {finish_location} {arrival}'
+                    
+                if first_item in ['handover', 'takeover']:
+                    interact_list.append(line_as_list[-1])
+                    formatted_line = f'{first_item} > {line_as_list[-1]}'
+                    
+                if first_item in ['DH', 'SHUTTLE']:
+                    service_type    = first_item
+                    start_location  = line_as_list[1]
+                    finish_location = line_as_list[2]
+                    departure       = line_as_list[3]
+                    arrival         = line_as_list[4]
+
+                    formatted_line = f'{service_type} | {start_location} {departure} > {finish_location} {arrival}'
                         
-                        formatted_line = f'{train_number} | {service_type} | {start_location} {departure} > {finish_location} {arrival}'
-                    
-                    if first_item in ['handover', 'takeover']:
-                        interact_list.append(line_as_list[-1])
-                        formatted_line = f'{first_item} > {line_as_list[-1]}'
-                    
-                    if first_item in ['DH', 'SHUTTLE']:
-                        service_type    = first_item
-                        start_location  = line_as_list[1]
-                        finish_location = line_as_list[2]
-                        departure       = line_as_list[3]
-                        arrival         = line_as_list[4]
+                if first_item in ['FUEL', 'DEF']:
+                    service_type    = first_item
+                    train_number    = line_as_list[1]
+                    start_location  = line_as_list[2]
+                    finish_location = line_as_list[3]
+                    departure       = line_as_list[4]
+                    arrival         = line_as_list[5]
 
-                        formatted_line = f'{service_type} | {start_location} {departure} > {finish_location} {arrival}'
-                        
-                    if first_item in ['FUEL', 'DEF']:
-                        service_type    = first_item
-                        train_number    = line_as_list[1]
-                        start_location  = line_as_list[2]
-                        finish_location = line_as_list[3]
-                        departure       = line_as_list[4]
-                        arrival         = line_as_list[5]
+                    formatted_line = f'{service_type} | {start_location} {departure} > {arrival}'
 
-                        formatted_line = f'{service_type} | {start_location} {departure} > {arrival}'
-
-                    trips_list.append(formatted_line)
-                    Job_Trips.append(Trip(job_number, service_type, train_number, start_location, finish_location, departure, arrival, operating_days))
+                trips_list.append(formatted_line)
+                #Job_Trips.append(Trip(job_number, service_type, train_number, start_location, finish_location, departure, arrival, operating_days))
 
     
+   # print(job_number , on_duty , on_duty_location , operating_time , work_time , split_time , [] , interact_list, operating_days , off_duty)
+
     Job_Descriptions[page] = Job(job_number , on_duty , on_duty_location , operating_time , work_time , split_time , trips_list , interact_list, operating_days , off_duty)
+
+
 
 
 # Check for and remove duplicates (some job descriptioons span 2 pages)
