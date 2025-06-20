@@ -1,23 +1,24 @@
 # importing all the required modules
-import pypdf
 from dataclasses import dataclass
+import PyPDF2
 import pandas as pd
 import streamlit as st
 import backend
 
+
 # create Job template
 @dataclass
 class Job():
-    job_number          : str 
-    on_duty             : str 
-    on_duty_location    : str 
-    operating_time      : str 
-    work_time           : str 
-    split_time          : str 
+    job_number          : str
+    on_duty             : str
+    on_duty_location    : str
+    operating_time      : str
+    work_time           : str
+    split_time          : str
     trips               : list
     interact_with_crew  : list
     operating_days      : str
-    off_duty            : str 
+    off_duty            : str
 
 # create Trip template
 @dataclass
@@ -50,7 +51,7 @@ selected_job_package = job_picker
 
 
 # creating a pdf reader object
-reader = pypdf.PdfReader(selected_job_package)
+reader = PyPDF2.PdfReader(selected_job_package)
 
 
 
@@ -65,11 +66,10 @@ Job_Trips = []
 
 
 # Filter list 
-filter = ["Non-Revenue", "Revenue", "DH", "VAN", "SHUTTLE", "Split from", 'takeover', 'handover','DEF' ,'FUEL']
+filter = ["Non-Revenue", "Revenue", "DH", "VAN", "SHUTTLE", "Split from", 'takeover', 'handover','DEF' ,'FUEL', 'STBY']
 
 # Loop through pages
 for  page in range(number_of_pages):
-    
     
     # Read page content
     page_content = reader.pages[page].extract_text()
@@ -83,8 +83,7 @@ for  page in range(number_of_pages):
     for line in page_content.splitlines():
         
         line_as_list = line.split()
-        #print(line_as_list)
-
+        
         if len(line_as_list) > 0:
             first_item = line_as_list[0]
 
@@ -100,7 +99,7 @@ for  page in range(number_of_pages):
             if first_item == 'Work':                
                 work_time = line_as_list[-1]
 
-            if first_item in ['Valid', 'Eff' , 'Mon-Fri', 'Friday', 'Saturda', 'Sunday']:
+            if first_item in ['Valid', 'Eff' , 'Mon-Fri', 'Friday', 'Saturda', 'Sunday', 'Sat-Sun']:
                 job_number = line_as_list[-1]
                 operating_days = line_as_list[3]
                 on_duty = line_as_list[-4]
@@ -118,7 +117,7 @@ for  page in range(number_of_pages):
 
                 if  first_item in ['VAN', 'Shuttle']:
                     service_type    = first_item
-                    start_location  = line_as_list[1]
+                    start_location  = line_as_list[1][0:2]
                     finish_location = line_as_list [2]
                     departure       = line_as_list[3]
                     arrival         = line_as_list[4]
@@ -128,7 +127,7 @@ for  page in range(number_of_pages):
                 if  first_item in ["Non-Revenue", "Revenue"]:
                     service_type    = first_item
                     train_number    = line_as_list[2]
-                    start_location  = line_as_list[3]
+                    start_location  = line_as_list[3][0:2]
                     finish_location = line_as_list[4]
                     departure       = line_as_list[5]
                     arrival         = line_as_list[6]
@@ -141,7 +140,7 @@ for  page in range(number_of_pages):
                     
                 if first_item in ['DH', 'SHUTTLE']:
                     service_type    = first_item
-                    start_location  = line_as_list[1]
+                    start_location  = line_as_list[1][0:2]
                     finish_location = line_as_list[2]
                     departure       = line_as_list[3]
                     arrival         = line_as_list[4]
@@ -151,19 +150,26 @@ for  page in range(number_of_pages):
                 if first_item in ['FUEL', 'DEF']:
                     service_type    = first_item
                     train_number    = line_as_list[1]
-                    start_location  = line_as_list[2]
+                    start_location  = line_as_list[2][0:2]
                     finish_location = line_as_list[3]
                     departure       = line_as_list[4]
                     arrival         = line_as_list[5]
 
                     formatted_line = f'{service_type} | {start_location} {departure} > {arrival}'
 
+                if first_item == 'STBY':
+                    service_type    = first_item
+                    start_location  = line_as_list[2][0:2]
+                    departure       = line_as_list[4]
+                    arrival         = line_as_list[5]
+
+                    formatted_line = f'{service_type} | {start_location} {departure} > {arrival}'                
+
+
                 trips_list.append(formatted_line)
                 #Job_Trips.append(Trip(job_number, service_type, train_number, start_location, finish_location, departure, arrival, operating_days))
 
     
-   # print(job_number , on_duty , on_duty_location , operating_time , work_time , split_time , [] , interact_list, operating_days , off_duty)
-
     Job_Descriptions[page] = Job(job_number , on_duty , on_duty_location , operating_time , work_time , split_time , trips_list , interact_list, operating_days , off_duty)
 
 
