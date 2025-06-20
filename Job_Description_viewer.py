@@ -1,5 +1,5 @@
 # importing all the required modules
-import PyPDF2
+import pypdf
 from dataclasses import dataclass
 import pandas as pd
 import streamlit as st
@@ -50,7 +50,7 @@ selected_job_package = job_picker
 
 
 # creating a pdf reader object
-reader = PyPDF2.PdfReader(selected_job_package)
+reader = pypdf.PdfReader(selected_job_package)
 
 
 
