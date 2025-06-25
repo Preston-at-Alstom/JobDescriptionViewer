@@ -38,10 +38,7 @@ st.set_page_config(
     layout="wide",)
 
 packages = ['TO-ON-25-084 - Job description_27Apr2025_baseline_Mon-Fri_2025-04-07_Full.pdf',
-            'TO-ON-25-084 - Job description_27Apr2025_baseline_Sat-Sun_2025-04-07_Full.pdf',
-            'Job Descriptions - eff June 20, 2025 ONLY.pdf' ,
-            'Job Descriptions - eff June 21, 2025 ONLY.pdf',
-            'Job Descriptions - eff June 22, 2025 ONLY.pdf'
+            'TO-ON-25-084 - Job description_27Apr2025_baseline_Sat-Sun_2025-04-07_Full.pdf'
             ]
 
 job_picker = st.radio("Job Package:", packages)
