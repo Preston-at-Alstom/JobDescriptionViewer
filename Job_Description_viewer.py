@@ -4,6 +4,7 @@ from PyPDF2 import PdfReader
 import pandas as pd
 import streamlit as st
 import backend
+import datetime as dt
 
 
 # create Job template
@@ -41,10 +42,30 @@ packages = ['TO-ON-25-084 - Job description_27Apr2025_baseline_Mon-Fri_2025-04-0
             'TO-ON-25-084 - Job description_27Apr2025_baseline_Sat-Sun_2025-04-07_Full.pdf'
             ]
 
-job_picker = st.radio("Job Package:", packages)
+
+today = dt.datetime.today()
+day = today.weekday()
 
 
-selected_job_package = job_picker
+# if 0 <= day <= 5:
+#         print('Weekday') 
+# else:
+#       print('Weekend')
+
+weekday = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'mon-fri', 'mon-thu']
+weekend = ['saturday', 'sunday', 'sat-sun']
+
+
+
+loaded_package = packages[0]
+
+
+form = st.form(key='my_form')
+selected_job_package = form.selectbox('Select Job Package',packages, key=1)
+submit_button = form.form_submit_button(label='Load Package')
+
+if selected_job_package != loaded_package:
+    loaded_package = selected_job_package
 
 
 # creating a pdf reader object
@@ -98,10 +119,15 @@ for  page in range(number_of_pages):
 
             if first_item in ['Valid', 'Eff' , 'Mon-Fri', 'Friday', 'Saturda', 'Sunday', 'Sat-Sun']:
                 job_number = line_as_list[-1]
-                operating_days = line_as_list[3]
+                operating_days = line_as_list[0]
                 on_duty = line_as_list[-4]
                 
-            
+            if first_item in ['Valid', 'Eff' , 'Mon-Fri', 'Friday', 'Saturda', 'Sunday', 'Sat-Sun']:
+                job_number = line_as_list[-1]
+                operating_days = line_as_list[0]
+                on_duty = line_as_list[-4]
+
+
             if first_item in filter:  
                 formatted_line  = ''  
                 service_type    = ''
@@ -186,7 +212,7 @@ job_number_filter = st.text_input("Find Job Number :")
 default_list_of_locations = ['AE','BR','HA','LI','LR','ML','RL','SH','WB','WR']
 filtered_locations = []
 
-# Create checkboxes for filtering terminals, alligned in a row.
+# Create checkboxes for filtering terminals, alligned in a row. Default is unchecked
 teminal_select_columns = st.columns(10)
 with teminal_select_columns[0]: 
     ae = st.checkbox('Allendale (AE)', value = False)
