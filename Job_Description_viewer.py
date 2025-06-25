@@ -38,8 +38,8 @@ st.set_page_config(
     page_title="Job Description Viewer ver 1.0",
     layout="wide",)
 
-packages = ['TO-ON-25-084 - Job description_27Apr2025_baseline_Mon-Fri_2025-04-07_Full.pdf',
-            'TO-ON-25-084 - Job description_27Apr2025_baseline_Sat-Sun_2025-04-07_Full.pdf'
+packages = ['TO-ON-25-093 - Job Descriptions - WeekDAY - Mon-Fri - eff May 17, 2025.pdf',
+            'TO-ON-25-093 - Job Descriptions - WeekEND - Sat-Sun - eff May 17, 2025.pdf'
             ]
 
 
