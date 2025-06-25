@@ -150,7 +150,7 @@ for  page in range(number_of_pages):
                 if  first_item in ["Non-Revenue", "Revenue"]:
                     service_type    = first_item
                     train_number    = line_as_list[2]
-                    start_location  = line_as_list[3][0:2]
+                    start_location  = line_as_list[3]
                     finish_location = line_as_list[4]
                     departure       = line_as_list[5]
                     arrival         = line_as_list[6]
@@ -161,9 +161,9 @@ for  page in range(number_of_pages):
                     interact_list.append(line_as_list[-1])
                     formatted_line = f'{first_item} > {line_as_list[-1]}'
                     
-                if first_item in ['DH', 'SHUTTLE']:
+                if first_item in ['DH']:
                     service_type    = first_item
-                    start_location  = line_as_list[1][0:2]
+                    start_location  = line_as_list[1]
                     finish_location = line_as_list[2]
                     departure       = line_as_list[3]
                     arrival         = line_as_list[4]
@@ -173,7 +173,7 @@ for  page in range(number_of_pages):
                 if first_item in ['FUEL', 'DEF']:
                     service_type    = first_item
                     train_number    = line_as_list[1]
-                    start_location  = line_as_list[2][0:2]
+                    start_location  = line_as_list[2]
                     finish_location = line_as_list[3]
                     departure       = line_as_list[4]
                     arrival         = line_as_list[5]
