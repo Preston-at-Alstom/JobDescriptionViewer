@@ -24,14 +24,14 @@ class Job():
 # create Trip template
 @dataclass
 class Trip():
-    job_number      : str = ''
-    service_type    : str = ''
-    train_number    : str = ''
-    start_location  : str = ''  
-    finish_location : str = ''
-    departure       : str = ''
-    arrival         : str = ''
-    operating_days  : str = ''
+    job_number          : str = ''
+    service_type        : str = ''
+    train_number        : str = ''
+    start_location      : str = ''  
+    finish_location     : str = ''
+    departure           : str = ''
+    arrival             : str = ''
+    operating_days      : str = ''
 
 
 st.set_page_config(
@@ -39,28 +39,16 @@ st.set_page_config(
     layout="wide",)
 
 packages = ['TO-ON-25-093 - Job Descriptions - WeekDAY - Mon-Fri - eff May 17, 2025.pdf',
-            'TO-ON-25-093 - Job Descriptions - WeekEND - Sat-Sun - eff May 17, 2025.pdf'
+            'TO-ON-25-093 - Job Descriptions - WeekEND - Sat-Sun - eff May 17, 2025.pdf',
+            'TO-ON-25-130 Job Descriptions - eff July 4, 2025 ONLY.pdf',
+            'TO-ON-25-130 Job Descriptions - eff July 5, 2025 ONLY.pdf',
+            'TO-ON-25-130 Job Descriptions - eff July 6, 2025 ONLY.pdf'
             ]
-
-
-today = dt.datetime.today()
-day = today.weekday()
-
-
-# if 0 <= day <= 5:
-#         print('Weekday') 
-# else:
-#       print('Weekend')
-
-weekday = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'mon-fri', 'mon-thu']
-weekend = ['saturday', 'sunday', 'sat-sun']
-
-
 
 loaded_package = packages[0]
 
 
-form = st.form(key='my_form')
+form = st.form(key='package_selection_form')
 selected_job_package = form.selectbox('Select Job Package',packages, key=1)
 submit_button = form.form_submit_button(label='Load Package')
 
@@ -71,8 +59,6 @@ if selected_job_package != loaded_package:
 # creating a pdf reader object
 reader = PdfReader(selected_job_package)
 
-
-
 # Find the number of pages
 number_of_pages = len(reader.pages)
 
@@ -82,9 +68,8 @@ Job_Descriptions = [""] * number_of_pages
 # Create list to hold trip info for each job
 Job_Trips = []
 
-
 # Filter list 
-filter = ["Non-Revenue", "Revenue", "DH", "VAN", "SHUTTLE", "Split from", 'takeover', 'handover','DEF' ,'FUEL', 'STBY']
+filter = ['Non-Revenue', 'Revenue', 'DH', 'VAN', 'SHUTTLE', 'Split from', 'takeover', 'handover','DEF' ,'FUEL', 'STBY']
 
 # Loop through pages
 for  page in range(number_of_pages):
@@ -96,15 +81,16 @@ for  page in range(number_of_pages):
     trips_list = []
     trips_list_obj = []
     interact_list = []    
-
+    
     # Read line by line and extract data
     for line in page_content.splitlines():
         
         line_as_list = line.split()
         
+  
         if len(line_as_list) > 0:
             first_item = line_as_list[0]
-
+        
 
             if first_item == 'Operating':
                 operating_time = line_as_list[-1]
@@ -117,81 +103,51 @@ for  page in range(number_of_pages):
             if first_item == 'Work':                
                 work_time = line_as_list[-1]
 
-            if first_item in ['Valid', 'Eff' , 'Mon-Fri', 'Friday', 'Saturda', 'Sunday', 'Sat-Sun']:
+            if first_item in ['Valid', 'Eff']:
                 job_number = line_as_list[-1]
                 operating_days = line_as_list[0]
                 on_duty = line_as_list[-4]
                 
-            if first_item in ['Valid', 'Eff' , 'Mon-Fri', 'Friday', 'Saturda', 'Sunday', 'Sat-Sun']:
+            if first_item in ['Mon-Fri', 'Friday', 'Saturda', 'Sunday', 'Sat-Sun', 'Saturday', 'Mon-Thu']:
                 job_number = line_as_list[-1]
                 operating_days = line_as_list[0]
                 on_duty = line_as_list[-4]
-
-
+                
             if first_item in filter:  
+                if first_item in ['VAN', 'Shuttle', 'STBY']: line_as_list.insert(1, '')
+                if first_item in ["Non-Revenue", "Revenue"]: line_as_list.remove('trip')
+                if first_item in ['takeover', 'handover']: line_as_list[1:1]= ['' , '', '']
+                
                 formatted_line  = ''  
-                service_type    = ''
-                train_number    = ''
-                start_location  = ''
-                finish_location = ''
-                departure       = ''
-                arrival         = ''
-
+                
+                service_type    = first_item
+                train_number    = line_as_list[1]
+                start_location  = line_as_list[2]
+                finish_location = line_as_list[3]
+                departure       = line_as_list[4]
+                arrival         = line_as_list[5]
+                
 
                 if  first_item in ['VAN', 'Shuttle']:
-                    service_type    = first_item
-                    start_location  = line_as_list[1][0:2]
-                    finish_location = line_as_list [2]
-                    departure       = line_as_list[3]
-                    arrival         = line_as_list[4]
-
-                    formatted_line = f'{service_type} | {start_location} {departure} > {finish_location} {arrival}'
+                    formatted_line = f'{service_type} | {start_location[0:2]} {departure} > {finish_location} {arrival}'
                     
-                if  first_item in ["Non-Revenue", "Revenue"]:
-                    service_type    = first_item
-                    train_number    = line_as_list[2]
-                    start_location  = line_as_list[3]
-                    finish_location = line_as_list[4]
-                    departure       = line_as_list[5]
-                    arrival         = line_as_list[6]
-                    
+                if  first_item in ["Non-Revenue", "Revenue", 'DH']:
                     formatted_line = f'{train_number} | {service_type} | {start_location} {departure} > {finish_location} {arrival}'
-                    
+                
+                if first_item in ['FUEL', 'DEF', 'STBY']:
+                    formatted_line = f'{service_type} | {start_location} {departure} > {arrival}'
+
                 if first_item in ['handover', 'takeover']:
                     interact_list.append(line_as_list[-1])
                     formatted_line = f'{first_item} > {line_as_list[-1]}'
                     
-                if first_item in ['DH']:
-                    service_type    = first_item
-                    start_location  = line_as_list[1]
-                    finish_location = line_as_list[2]
-                    departure       = line_as_list[3]
-                    arrival         = line_as_list[4]
+                       
 
-                    formatted_line = f'{service_type} | {start_location} {departure} > {finish_location} {arrival}'
-                        
-                if first_item in ['FUEL', 'DEF']:
-                    service_type    = first_item
-                    train_number    = line_as_list[1]
-                    start_location  = line_as_list[2]
-                    finish_location = line_as_list[3]
-                    departure       = line_as_list[4]
-                    arrival         = line_as_list[5]
-
-                    formatted_line = f'{service_type} | {start_location} {departure} > {arrival}'
-
-                if first_item == 'STBY':
-                    service_type    = first_item
-                    start_location  = line_as_list[2][0:2]
-                    departure       = line_as_list[4]
-                    arrival         = line_as_list[5]
-
-                    formatted_line = f'{service_type} | {start_location} {departure} > {arrival}'                
-
+                
 
                 trips_list.append(formatted_line)
                 #Job_Trips.append(Trip(job_number, service_type, train_number, start_location, finish_location, departure, arrival, operating_days))
-
+        
     
     Job_Descriptions[page] = Job(job_number , on_duty , on_duty_location , operating_time , work_time , split_time , trips_list , interact_list, operating_days , off_duty)
 
@@ -212,28 +168,25 @@ job_number_filter = st.text_input("Find Job Number :")
 default_list_of_locations = ['AE','BR','HA','LI','LR','ML','RL','SH','WB','WR']
 filtered_locations = []
 
+
+terminal_filter_form = st.form(key='terminal_filter_form')
+
+
 # Create checkboxes for filtering terminals, alligned in a row. Default is unchecked
-teminal_select_columns = st.columns(10)
-with teminal_select_columns[0]: 
-    ae = st.checkbox('Allendale (AE)', value = False)
-with teminal_select_columns[1]: 
-    br = st.checkbox('Bradford (BR)', value = False)
-with teminal_select_columns[2]: 
-    ha = st.checkbox('Hamilton (HA)', value = False)
-with teminal_select_columns[3]: 
-    li = st.checkbox('Lincolnville (LI)', value = False)
-with teminal_select_columns[4]: 
-    lr = st.checkbox('Lewis Road (LR)', value = False)
-with teminal_select_columns[5]: 
-    ml = st.checkbox('Milton (ML)', value = False)
-with teminal_select_columns[6]: 
-    rl = st.checkbox('Richmond Hill (RL)', value = False)
-with teminal_select_columns[7]: 
-    sh = st.checkbox('Shirley (SH)', value = False)
-with teminal_select_columns[8]: 
-    wb = st.checkbox('Willowbrook (WB)', value = False)
-with teminal_select_columns[9]:
-    wr = st.checkbox('WRMF (WR)', value = False)
+teminal_select_columns = terminal_filter_form.columns(10)
+with teminal_select_columns[0]:   ae = st.checkbox('Allendale (AE)',     value = False)
+with teminal_select_columns[1]:   br = st.checkbox('Bradford (BR)',      value = False)
+with teminal_select_columns[2]:   ha = st.checkbox('Hamilton (HA)',      value = False)
+with teminal_select_columns[3]:   li = st.checkbox('Lincolnville (LI)',  value = False)
+with teminal_select_columns[4]:   lr = st.checkbox('Lewis Road (LR)',    value = False)
+with teminal_select_columns[5]:   ml = st.checkbox('Milton (ML)',        value = False)
+with teminal_select_columns[6]:   rl = st.checkbox('Richmond Hill (RL)', value = False)
+with teminal_select_columns[7]:   sh = st.checkbox('Shirley (SH)',       value = False)
+with teminal_select_columns[8]:   wb = st.checkbox('Willowbrook (WB)',   value = False)
+with teminal_select_columns[9]:   wr = st.checkbox('WRMF (WR)',          value = False)
+
+submit_button = terminal_filter_form.form_submit_button(label='Filter terminals')
+
 
 # List to hold terminal checkbox results
 selected_locations = [ae,br,ha,li,lr,ml,rl,sh,wb,wr]
