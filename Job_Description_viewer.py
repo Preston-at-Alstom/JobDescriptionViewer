@@ -105,7 +105,7 @@ for  page in range(number_of_pages):
 
             if first_item in ['Valid', 'Eff']:
                 job_number = line_as_list[-1]
-                operating_days = line_as_list[0]
+                operating_days = ' '.join(line_as_list[0:5])[:-3]
                 on_duty = line_as_list[-4]
                 
             if first_item in ['Mon-Fri', 'Friday', 'Saturda', 'Sunday', 'Sat-Sun', 'Saturday', 'Mon-Thu']:
