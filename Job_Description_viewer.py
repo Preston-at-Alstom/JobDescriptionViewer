@@ -114,7 +114,7 @@ for  page in range(number_of_pages):
                 on_duty = line_as_list[-4]
                 
             if first_item in filter:  
-                if first_item in ['VAN', 'Shuttle', 'STBY']: line_as_list.insert(1, '')
+                if first_item in ['VAN', 'SHUTTLE', 'STBY']: line_as_list.insert(1, '')
                 if first_item in ["Non-Revenue", "Revenue"]: line_as_list.remove('trip')
                 if first_item in ['takeover', 'handover']: line_as_list[1:1]= ['' , '', '']
                 
@@ -128,14 +128,17 @@ for  page in range(number_of_pages):
                 arrival         = line_as_list[5]
                 
 
-                if  first_item in ['VAN', 'Shuttle']:
+                if  first_item in ['VAN', 'SHUTTLE']:
                     formatted_line = f'{service_type} | {start_location[0:2]} {departure} > {finish_location} {arrival}'
                     
                 if  first_item in ["Non-Revenue", "Revenue", 'DH']:
                     formatted_line = f'{train_number} | {service_type} | {start_location} {departure} > {finish_location} {arrival}'
+
+                if first_item in ['STBY']:
+                    formatted_line = f'{service_type} @ {start_location[0:2]} {departure} > {arrival}'
                 
-                if first_item in ['FUEL', 'DEF', 'STBY']:
-                    formatted_line = f'{service_type} | {start_location} {departure} > {arrival}'
+                if first_item in ['FUEL', 'DEF' ]:
+                    formatted_line = f'{service_type} @ {start_location} {departure} > {arrival}'
 
                 if first_item in ['handover', 'takeover']:
                     interact_list.append(line_as_list[-1])
