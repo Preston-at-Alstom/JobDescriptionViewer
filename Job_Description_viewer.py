@@ -40,9 +40,10 @@ st.set_page_config(
 
 packages = ['TO-ON-25-093 - Job Descriptions - WeekDAY - Mon-Fri - eff May 17, 2025.pdf',
             'TO-ON-25-093 - Job Descriptions - WeekEND - Sat-Sun - eff May 17, 2025.pdf',
-            'TO-ON-25-130 Job Descriptions - eff July 4, 2025 ONLY.pdf',
-            'TO-ON-25-130 Job Descriptions - eff July 5, 2025 ONLY.pdf',
-            'TO-ON-25-130 Job Descriptions - eff July 6, 2025 ONLY.pdf'
+            'TO-ON-25-133 - Job Descriptions - eff Friday July 11 2025 ONLY.pdf',
+            'TO-ON-25-133 -Job Descriptions - eff Saturday July 12 2025 ONLY.pdf',
+            'TO-ON-25-133 -Job Descriptions - eff Sunday July 13 2025 ONLY.pdf',
+            'TO-ON-25-133 -Job Descriptions - eff Monday July 14 2025 ONLY.pdf'
             ]
 
 loaded_package = packages[0]
