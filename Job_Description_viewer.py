@@ -38,7 +38,7 @@ st.set_page_config(
     page_title="Job Description Viewer ver 1.0",
     layout="wide",)
 
-packages = ['TO-ON-25-181  Job Descriptions  WeekDAYs  eff September 21 2025',
+packages = ['TO-ON-25-181  Job Descriptions  WeekDAYs  eff September 21 2025.pdf',
             'TO-ON-25-181 Job Descriptions  WeekENDs  eff September 21 2025.pdf'
             ]
 
@@ -218,4 +218,5 @@ else:
 filtered_df = filtered_df.loc[filtered_df['on_duty_location'].isin(filtered_locations)]
 
 st.dataframe(filtered_df, height=600, hide_index=True)
+
 
