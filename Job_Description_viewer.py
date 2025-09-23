@@ -38,12 +38,8 @@ st.set_page_config(
     page_title="Job Description Viewer ver 1.0",
     layout="wide",)
 
-packages = ['TO-ON-25-093 - Job Descriptions - WeekDAY - Mon-Fri - eff May 17, 2025.pdf',
-            'TO-ON-25-093 - Job Descriptions - WeekEND - Sat-Sun - eff May 17, 2025.pdf',
-            'TO-ON-25-133 - Job Descriptions - eff Friday July 11 2025 ONLY.pdf',
-            'TO-ON-25-133 -Job Descriptions - eff Saturday July 12 2025 ONLY.pdf',
-            'TO-ON-25-133 -Job Descriptions - eff Sunday July 13 2025 ONLY.pdf',
-            'TO-ON-25-133 -Job Descriptions - eff Monday July 14 2025 ONLY.pdf'
+packages = ['TO-ON-25-181  Job Descriptions  WeekDAYs  eff September 21 2025',
+            'TO-ON-25-181 Job Descriptions  WeekENDs  eff September 21 2025.pdf'
             ]
 
 loaded_package = packages[0]
@@ -222,3 +218,4 @@ else:
 filtered_df = filtered_df.loc[filtered_df['on_duty_location'].isin(filtered_locations)]
 
 st.dataframe(filtered_df, height=600, hide_index=True)
+
